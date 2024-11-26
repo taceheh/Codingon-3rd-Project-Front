@@ -9,6 +9,7 @@ import TradeSell from '../../components/stockGuide/TradeSell';
 import TradeModify from '../../components/stockGuide/TradeModify';
 import { Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import debounce from 'lodash.debounce';
 
 const StockGuidePage = () => {
   const [isToggle, setIsToggle] = useState(false);
@@ -26,6 +27,24 @@ const StockGuidePage = () => {
       console.error('DB에 없는 단어입니다.');
     }
   };
+  // const handleClick = debounce(async (word: string) => {
+  //   try {
+  //     const response = await GetWord(word);
+
+  //     // 데이터가 없을 때 기본 메시지 처리
+  //     if (!response?.data?.explanation) {
+  //       setExplain('단어에 대한 설명을 찾을 수 없습니다.');
+  //       return;
+  //     }
+
+  //     setExplain(response.data.explanation);
+  //   } catch (error: any) {
+  //     // 사용자에게 에러 피드백
+  //     setExplain('단어를 가져오는 중 오류가 발생했습니다.');
+  //     console.error(error);
+  //   }
+  // }, 300); // 300ms 디바운싱
+
   const toggleClick = () => {
     setIsToggle((prevIsToggle) => !prevIsToggle);
     if (isToggle) {
