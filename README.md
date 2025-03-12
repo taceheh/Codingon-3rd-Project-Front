@@ -323,10 +323,10 @@ develop 브랜치를 기본으로 하고 기능별 feature 브랜치를 사용�
 | 좋아요 토글 | `POST` | `/community/like` | `{postId}` | `{likeCount, isLiked}` | 토큰 필요 |
 | 인기 게시글 조회 | `GET` | `/community/rank` | - | `[{id, title, likeCount}, ...]` | - |
 
-## 📌 문서 활용 안내
+### 📌 문서 활용 안내
 이 API 명세서는 **프론트엔드 개발자와 백엔드 개발자 간의 원활한 소통을 위한 기준 문서**로 활용됩니다. 변경 사항이 있을 경우 즉시 업데이트하고 팀원들에게 공유해 주세요. 🚀
 
-<br/>
+<br/><br/>
 
 ## 💻 실행 방법
 
