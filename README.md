@@ -250,6 +250,81 @@ develop 브랜치를 기본으로 하고 기능별 feature 브랜치를 사용�
 
 ## 🔗 API 명세서
 
+### 📌 개요
+이 문서는 프론트엔드와 백엔드가 원활하게 소통할 수 있도록 작성된 **API 명세서**입니다. 프론트엔드와 백엔드는 **REST API**를 통해 데이터를 주고받으며, JWT 인증을 사용하여 보안을 유지합니다.
+
+### 📌 기본 정보
+| 항목 | 내용 |
+| --- | --- |
+| **기본 URL** | `https://api.example.com` |
+| **응답 형식** | JSON (`Content-Type: application/json`) |
+| **인증 방식** | JWT Token (Authorization 헤더) |
+
+### 📌 API 목록
+
+### 🔑 사용자 관리 API
+| 기능 | Method | URL | 요청 데이터 | 응답 데이터 | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 회원가입 | `POST` | `/register` | `{email, password, name}` | `{token, user}` | 이메일 중복 확인 포함 |
+| 로그인 | `POST` | `/login` | `{email, password}` | `{token, user}` | 소셜 로그인은 별도 엔드포인트 |
+| 카카오 로그인 | `GET` | `/kakao/login?code={인가코드}` | - | `{token, user}` | 카카오 OAuth 인증 |
+| 사용자 정보 조회 | `POST` | `/mypage/getUserInfo` | `{token}` | `{id, name, email, ...}` | 토큰 필요 |
+| 프로필 수정 | `POST` | `/mypage/modifyUserInfo` | `{name, profileImage, ...}` | `{id, name, ...}` | 토큰 필요 |
+| 회원 탈퇴 | `POST` | `/mypage/deleteUserinfo` | `{token}` | `{success: true}` | 계정 삭제 |
+| 아이디 중복 체크 | `POST` | `/idValidate` | `{user_id}` | `{success: true}` | 아이디 중복 확인 |
+| 닉네임 중복 체크 | `POST` | `/nicknameValidate` | `{user_nickname}` | `{success: true}` | 닉네임 중복 확인 |
+| 아이디 찾기 | `POST` | `/findId` | `{user_email}` | `{user_id}` | 이메일 기반 아이디 찾기 |
+| 비밀번호 찾기 | `POST` | `/findPw` | `{user_id, user_email}` | `{success: true}` | 비밀번호 찾기 |
+| 비밀번호 변경 | `POST` | `/changePw` | `{user_id, new_password}` | `{success: true}` | 비밀번호 변경 |
+
+### 📰 뉴스 관련 API
+| 기능 | Method | URL | 요청 데이터 | 응답 데이터 | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 뉴스 목록 조회 | `GET` | `/news?category&page&limit` | - | `[{id, title, ...}, ...]` | 페이지네이션 지원 |
+| 뉴스 상세 조회 | `GET` | `/news/getDetail` | `{news_id}` | `{id, title, content, ...}` | - |
+| 관심 뉴스 저장 | `POST` | `/news/saveMyNews` | `{news_id}` | `{success: true}` | 토큰 필요 |
+| 저장한 뉴스 목록 조회 | `GET` | `/news/getMyNews` | `{token}` | `[{id, title, date}, ...]` | 토큰 필요 |
+
+### 📚 단어장 기능 API
+| 기능 | Method | URL | 요청 데이터 | 응답 데이터 | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 단어 저장 | `POST` | `/news/saveMyword` | `{word, meaning, newsId}` | `{id, word, meaning}` | 토큰 필요 |
+| 저장한 단어 목록 조회 | `POST` | `/news/likedWords` | `{token}` | `[{word, meaning}, ...]` | 토큰 필요 |
+| 단어 삭제 | `POST` | `/news/deleteWords` | `{word}` | `{message: "단어 삭제 성공"}` | 토큰 필요 |
+
+### 📊 주식 정보 API
+| 기능 | Method | URL | 요청 데이터 | 응답 데이터 | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 주식 목록 조회 | `GET` | `/stocks?market&page` | - | `[{code, name, price, ...}, ...]` | 페이지네이션 지원 |
+| 주식 상세 정보 | `GET` | `/stocks/:code` | - | `{code, name, price, history, ...}` | - |
+| 주식 차트 데이터 | `GET` | `/stocks/:code/chart?period` | - | `{labels, datasets}` | 기간별 데이터 지원 |
+| 호가 정보 조회 | `GET` | `/stocks/:code/orderbook` | - | `{asks, bids}` | 실시간 데이터 |
+
+### 🎮 모의 투자 API
+| 기능 | Method | URL | 요청 데이터 | 응답 데이터 | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 모의 계좌 생성 | `POST` | `/virtual/accounts` | `{initialBalance}` | `{id, balance, ...}` | 토큰 필요 |
+| 모의 주문 실행 | `POST` | `/virtual/orders` | `{stockCode, price, quantity, type}` | `{orderId, status, ...}` | 토큰 필요 |
+| 계좌 정보 조회 | `GET` | `/virtual/accounts/:id` | - | `{balance, holdings, transactions}` | 토큰 필요 |
+| 모의 투자 기록 조회 | `POST` | `/virtual/record` | `{token}` | `[{date, symbol, profit}, ...]` | 토큰 필요 |
+| 매수 (Buy) | `POST` | `/virtual/buy` | `{symbol, amount}` | `{message: "매수 성공"}` | 토큰 필요 |
+| 매도 (Sell) | `POST` | `/virtual/sell` | `{symbol, amount}` | `{message: "매도 성공"}` | 토큰 필요 |
+| 랭킹 조회 | `POST` | `/virtual/showRank` | - | `[{userId, profit, rank}, ...]` | 모의 투자 순위 조회 |
+
+### 💬 커뮤니티 API
+| 기능 | Method | URL | 요청 데이터 | 응답 데이터 | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 게시글 목록 조회 | `GET` | `/community/read` | - | `[{id, title, ...}, ...]` | 정렬 옵션 지원 |
+| 게시글 작성 | `POST` | `/community/write` | `{title, content, category}` | `{id, title, ...}` | 토큰 필요 |
+| 게시글 수정 | `POST` | `/community/modify` | `{title, content}` | `{id, title, ...}` | 작성자 검증 |
+| 게시글 삭제 | `POST` | `/community/delete` | `{postId}` | `{success: true}` | 작성자 검증 |
+| 댓글 작성 | `POST` | `/community/commentWrite` | `{postId, content}` | `{id, content, ...}` | 토큰 필요 |
+| 댓글 삭제 | `POST` | `/community/deleteCommnet` | `{commentId}` | `{message: "삭제 성공"}` | 토큰 필요 |
+| 좋아요 토글 | `POST` | `/community/like` | `{postId}` | `{likeCount, isLiked}` | 토큰 필요 |
+| 인기 게시글 조회 | `GET` | `/community/rank` | - | `[{id, title, likeCount}, ...]` | - |
+
+## 📌 문서 활용 안내
+이 API 명세서는 **프론트엔드 개발자와 백엔드 개발자 간의 원활한 소통을 위한 기준 문서**로 활용됩니다. 변경 사항이 있을 경우 즉시 업데이트하고 팀원들에게 공유해 주세요. 🚀
 
 <br/>
 
